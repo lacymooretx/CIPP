@@ -412,6 +412,155 @@
     "mappingRequired": true
   },
   {
+    "name": "ConnectWise Manage",
+    "id": "ConnectWise",
+    "type": "ConnectWise",
+    "cat": "Ticketing",
+    "logo": "/assets/integrations/connectwise.png",
+    "forceSyncButton": false,
+    "description": "Enable the ConnectWise Manage integration to send alerts to your ticketing system.",
+    "helpText": "This integration allows you to create service tickets in ConnectWise Manage from CIPP alerts.",
+    "links": [
+      {
+        "name": "ConnectWise Developer Portal",
+        "url": "https://developer.connectwise.com"
+      }
+    ],
+    "SettingOptions": [
+      {
+        "type": "switch",
+        "name": "ConnectWise.Enabled",
+        "label": "Enable Integration"
+      },
+      {
+        "type": "switch",
+        "name": "ConnectWise.ConsolidateTickets",
+        "label": "Consolidate Tickets",
+        "placeholder": "Consolidate tickets for the same alert into one ticket.",
+        "condition": {
+          "field": "ConnectWise.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "textField",
+        "name": "ConnectWise.BaseURL",
+        "label": "ConnectWise API Base URL",
+        "placeholder": "e.g. https://api-na.myconnectwise.net",
+        "required": true,
+        "condition": {
+          "field": "ConnectWise.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "textField",
+        "name": "ConnectWise.CompanyID",
+        "label": "ConnectWise Company ID",
+        "placeholder": "Your ConnectWise company identifier",
+        "required": true,
+        "condition": {
+          "field": "ConnectWise.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "textField",
+        "name": "ConnectWise.ClientID",
+        "label": "ConnectWise Client ID",
+        "placeholder": "Your developer Client ID (GUID from developer.connectwise.com)",
+        "required": true,
+        "condition": {
+          "field": "ConnectWise.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "textField",
+        "name": "ConnectWise.PublicKey",
+        "label": "API Member Public Key",
+        "placeholder": "Enter your API member public key",
+        "required": true,
+        "condition": {
+          "field": "ConnectWise.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "password",
+        "name": "ConnectWise.APIKey",
+        "label": "API Member Private Key",
+        "placeholder": "Enter your API member private key. Leave blank to keep current key.",
+        "required": true,
+        "condition": {
+          "field": "ConnectWise.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "autoComplete",
+        "name": "ConnectWise.Board",
+        "label": "Service Board",
+        "placeholder": "Select a service board, leave blank for default",
+        "multiple": false,
+        "api": {
+          "url": "/api/ExecExtensionMapping",
+          "data": {
+            "List": "ConnectWiseFields"
+          },
+          "queryKey": "ConnectWiseBoards",
+          "dataKey": "Boards",
+          "labelField": "name",
+          "valueField": "id",
+          "showRefresh": true
+        },
+        "condition": {
+          "field": "ConnectWise.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "autoComplete",
+        "name": "ConnectWise.Priority",
+        "label": "Ticket Priority",
+        "placeholder": "Select a priority, leave blank for default",
+        "multiple": false,
+        "api": {
+          "url": "/api/ExecExtensionMapping",
+          "data": {
+            "List": "ConnectWiseFields"
+          },
+          "queryKey": "ConnectWisePriorities",
+          "dataKey": "Priorities",
+          "labelField": "name",
+          "valueField": "id",
+          "showRefresh": true
+        },
+        "condition": {
+          "field": "ConnectWise.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      }
+    ],
+    "mappingRequired": true
+  },
+  {
     "name": "NinjaOne",
     "id": "NinjaOne",
     "type": "NinjaOne",
