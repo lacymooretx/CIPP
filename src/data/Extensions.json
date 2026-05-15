@@ -417,6 +417,7 @@
     "type": "ConnectWise",
     "cat": "Ticketing",
     "logo": "/assets/integrations/connectwise.png",
+    "logoDark": "/assets/integrations/connectwise_dark.png",
     "forceSyncButton": false,
     "description": "Enable the ConnectWise Manage integration to send alerts to your ticketing system.",
     "helpText": "This integration allows you to create service tickets in ConnectWise Manage from CIPP alerts.",
