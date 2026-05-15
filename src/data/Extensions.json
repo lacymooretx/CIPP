@@ -68,6 +68,25 @@
           "compareValue": true,
           "action": "disable"
         }
+      },
+      {
+        "type": "autoComplete",
+        "name": "Pax8.AllowedCustomRoles",
+        "label": "Select CIPP roles that are allowed to purchase licenses",
+        "helperText": "If left blank, anyone with API access can buy or cancel Pax8 licenses. Pick one or more CIPP custom roles to require role membership.",
+        "api": {
+          "url": "/api/ListCustomRole",
+          "queryKey": "CustomRoles",
+          "labelField": "RoleName",
+          "valueField": "RoleName"
+        },
+        "multiple": true,
+        "condition": {
+          "field": "Pax8.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
       }
     ]
   },
