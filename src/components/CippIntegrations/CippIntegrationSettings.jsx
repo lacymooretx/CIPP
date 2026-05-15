@@ -7,7 +7,7 @@ import { useSettings } from "../../hooks/use-settings";
 import { ApiGetCall } from "../../api/ApiCall";
 import { useRouter } from "next/router";
 import extensions from "../../data/Extensions.json";
-import React from "react";
+import React, { useEffect } from "react";
 import { CippFormCondition } from "../CippComponents/CippFormCondition";
 
 const CippIntegrationSettings = ({ children }) => {
@@ -22,13 +22,8 @@ const CippIntegrationSettings = ({ children }) => {
     refetchOnReconnect: false,
   });
 
-  // `values` is a reactive prop in RHF >=7.43 that re-syncs the form whenever it changes.
-  // Replaces the previous useEffect+reset pattern, which was racing the initial render
-  // and leaving the form on its per-Controller `defaultValue` (everything false / empty)
-  // even when /api/ListExtensionsConfig returned saved values.
   const formControl = useForm({
     mode: "onChange",
-    values: integrations?.data,
   });
 
   const extension = extensions.find((extension) => extension.id === router.query.id);
@@ -38,6 +33,17 @@ const CippIntegrationSettings = ({ children }) => {
   if (preferredTheme === "dark" && extension?.logoDark) {
     logo = extension.logoDark;
   }
+
+  // Reset the form whenever the API data reference changes (including the initial
+  // undefined -> real-data transition). The previous pattern depended on
+  // `integrations.isSuccess` flipping, which already happened before this child
+  // mounted in many cases, so the effect fired once with `integrations.data`
+  // still undefined and the form stayed on its per-Controller defaults.
+  useEffect(() => {
+    if (integrations.data) {
+      formControl.reset(integrations.data);
+    }
+  }, [integrations.data]);
 
   return (
     <>
