@@ -18,6 +18,60 @@
     "mappingRequired": false
   },
   {
+    "name": "Pax8",
+    "id": "Pax8",
+    "type": "Pax8",
+    "cat": "CSP",
+    "logo": "/assets/integrations/pax8.png",
+    "logoDark": "/assets/integrations/pax8_dark.png",
+    "description": "Enable the Pax8 integration to manage your CSP licensing and view customer + subscription data from CIPP.",
+    "helpText": "This integration connects CIPP to your Pax8 partner account using OAuth2 (client credentials). It maps your CIPP tenants to Pax8 companies so future features (license counts, ordering, billing checks) can resolve the right Pax8 customer automatically. Create a Pax8 API client at https://app.pax8.com (Settings -> Integrations).",
+    "mappingRequired": true,
+    "links": [
+      {
+        "name": "Pax8 API Overview",
+        "url": "https://docs.pax8.com/space/PXAPIH/2491777156/Pax8+API+Documentation"
+      },
+      {
+        "name": "Generate Pax8 API Credentials",
+        "url": "https://docs.pax8.com/space/PXAPIH/2491777244/Authentication"
+      }
+    ],
+    "SettingOptions": [
+      {
+        "type": "switch",
+        "name": "Pax8.Enabled",
+        "label": "Enable Integration"
+      },
+      {
+        "type": "textField",
+        "name": "Pax8.clientId",
+        "label": "Pax8 Client ID",
+        "placeholder": "Enter your Pax8 API Client ID",
+        "required": true,
+        "condition": {
+          "field": "Pax8.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "password",
+        "name": "Pax8.APIKey",
+        "label": "Pax8 Client Secret",
+        "placeholder": "Enter your Pax8 API Client Secret. Leave blank to keep your current secret.",
+        "required": true,
+        "condition": {
+          "field": "Pax8.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      }
+    ]
+  },
+  {
     "name": "Sherweb",
     "id": "Sherweb",
     "type": "Sherweb",
