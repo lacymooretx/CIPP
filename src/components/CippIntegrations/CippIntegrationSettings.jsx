@@ -40,6 +40,14 @@ const CippIntegrationSettings = ({ children }) => {
   // mounted in many cases, so the effect fired once with `integrations.data`
   // still undefined and the form stayed on its per-Controller defaults.
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.__cippIntegEffect = (window.__cippIntegEffect || []);
+      window.__cippIntegEffect.push({
+        ts: Date.now(),
+        dataIsTruthy: !!integrations.data,
+        dataKeys: integrations.data ? Object.keys(integrations.data) : null,
+      });
+    }
     if (integrations.data) {
       formControl.reset(integrations.data);
     }
