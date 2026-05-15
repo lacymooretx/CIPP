@@ -792,6 +792,147 @@
     "showSyncButton": true
   },
   {
+    "name": "IT Glue",
+    "id": "ITGlue",
+    "type": "ITGlue",
+    "cat": "Documentation",
+    "logo": "/assets/integrations/itglue.png",
+    "logoDark": "/assets/integrations/itglue_dark.png",
+    "forceSyncButton": true,
+    "description": "Enable the IT Glue integration to sync documentation.",
+    "helpText": "This integration syncs Microsoft 365 users, devices, and (optionally) domains into IT Glue. Users are upserted as Contacts plus a Flexible Asset row with M365 metadata. Devices are upserted as Configurations of the configuration type you map. Requires an IT Glue API key with Password Access enabled if you later want to manage passwords. Keys are revoked after 90 days of inactivity.",
+    "links": [
+      {
+        "name": "IT Glue API Documentation",
+        "url": "https://api.itglue.com/developer/"
+      },
+      {
+        "name": "Generating API Keys",
+        "url": "https://helpdesk.kaseya.com/hc/en-gb/articles/4407535760913-Getting-started-with-the-IT-Glue-API"
+      }
+    ],
+    "SettingOptions": [
+      {
+        "type": "switch",
+        "name": "ITGlue.Enabled",
+        "label": "Enable Integration"
+      },
+      {
+        "type": "autoComplete",
+        "name": "ITGlue.Region",
+        "label": "IT Glue Region",
+        "placeholder": "Select your IT Glue region",
+        "multiple": false,
+        "creatable": false,
+        "options": [
+          { "label": "US (api.itglue.com)", "value": "US" },
+          { "label": "EU (api.eu.itglue.com)", "value": "EU" },
+          { "label": "Australia (api.au.itglue.com)", "value": "AU" }
+        ],
+        "required": true,
+        "condition": {
+          "field": "ITGlue.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "password",
+        "name": "ITGlue.APIKey",
+        "label": "IT Glue API Key",
+        "placeholder": "Enter your IT Glue API Key. Leave blank to keep your current key.",
+        "required": true,
+        "condition": {
+          "field": "ITGlue.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "ITGlue.CreateMissingUsers",
+        "label": "Create missing users in IT Glue",
+        "condition": {
+          "field": "ITGlue.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "ITGlue.CreateMissingDevices",
+        "label": "Create missing devices in IT Glue",
+        "condition": {
+          "field": "ITGlue.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "textField",
+        "name": "ITGlue.ExcludeSerials",
+        "label": "Exclude device serials (comma separated)",
+        "condition": {
+          "field": "ITGlue.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "ITGlue.ImportDomains",
+        "label": "Import domains from M365",
+        "condition": {
+          "field": "ITGlue.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "ITGlue.MonitorDomains",
+        "label": "Monitor domains in IT Glue",
+        "condition": {
+          "field": "ITGlue.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "ITGlue.CFEnabled",
+        "label": "Connect to IT Glue through a CloudFlare ZTNA Tunnel with the Service Account credentials.",
+        "condition": {
+          "field": "CFZTNA.Enabled",
+          "compareType": "is",
+          "compareValue": true
+        }
+      },
+      {
+        "type": "datePicker",
+        "name": "ITGlue.NextSync",
+        "label": "Reschedule next sync date",
+        "helperText": "Set a future date to delay the next scheduled sync. Leave blank to sync during the next scheduled sync.",
+        "condition": {
+          "field": "ITGlue.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      }
+    ],
+    "mappingRequired": true,
+    "fieldMapping": true,
+    "showSyncButton": true
+  },
+  {
     "name": "PasswordPusher",
     "id": "PWPush",
     "type": "PWPush",
