@@ -510,6 +510,17 @@ export const nativeMenuItems = [
         ],
       },
       {
+        title: 'Autopatch',
+        permissions: ['Endpoint.MEM.*'],
+        items: [
+          {
+            title: 'Autopatch',
+            path: '/endpoint/autopatch',
+            permissions: ['Endpoint.MEM.*'],
+          },
+        ],
+      },
+      {
         title: 'Device Management',
         permissions: ['Endpoint.MEM.*'],
         items: [
