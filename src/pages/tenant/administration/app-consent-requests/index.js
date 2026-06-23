@@ -11,7 +11,7 @@ import {
   Stack,
 } from "@mui/material";
 import { Grid } from "@mui/system";
-import { Visibility, CheckCircle, ExpandMore, Security, TaskAlt } from "@mui/icons-material";
+import { Visibility, CheckCircle, ExpandMore, Security } from "@mui/icons-material";
 import { FunnelIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useForm } from "react-hook-form";
 import CippFormComponent from "../../../../components/CippComponents/CippFormComponent";
@@ -67,16 +67,6 @@ const Page = () => {
   };
 
   const actions = [
-    {
-      label: "Approve (CIPP)",
-      type: "POST",
-      icon: <TaskAlt />,
-      color: "success",
-      url: "/api/ExecApproveAppConsentRequest",
-      data: { appId: "appId" },
-      confirmText:
-        "Approve this consent request now? CIPP will grant admin consent server-side using the CIPP-SAM app (no Global Admin elevation). Verify the requester, application, and requested scopes first. Scopes Microsoft won't allow app-only will be returned with a manual Entra consent link.",
-    },
     {
       label: "Review in Entra",
       link: `https://entra.microsoft.com/${tenantFilter}/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/~/AccessRequests`,
