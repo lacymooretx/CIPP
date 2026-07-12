@@ -20,15 +20,28 @@ import { CippFormTenantSelector } from "../../../components/CippComponents/CippF
 import { CippApiResults } from "../../../components/CippComponents/CippApiResults";
 import { ApiPostCall } from "../../../api/ApiCall";
 
-// Report catalogue. Each entry maps to a CIPP report command/endpoint.
+// Report catalogue. Every type runs through the generic dispatcher: on-demand
+// /api/ExecReport?ReportType=…, scheduled via command Push-ExecReport { ReportType }.
+const ENDPOINT = "/api/ExecReport";
+const COMMAND = "Push-ExecReport";
 const REPORT_TYPES = [
-  {
-    label: "Microsoft 365 Security Report",
-    value: "Security",
-    endpoint: "/api/ExecSecurityReport",
-    command: "Push-ExecSecurityReport",
-  },
-];
+  { label: "Microsoft 365 Security Report", value: "Security" },
+  { label: "External Forwarding Report", value: "Forwarding" },
+  { label: "Registered Applications Report", value: "Applications" },
+  { label: "Intune Compliance Report", value: "IntuneCompliance" },
+  { label: "License Report", value: "Licenses" },
+  { label: "Administrator Report", value: "AdminTracker" },
+  { label: "Domain Health Report", value: "DomainInfo" },
+  { label: "Mailbox Access Report", value: "AccessTracker" },
+  { label: "Accounts & Licensing Report", value: "Accounts" },
+  { label: "User Login Report", value: "LoginTracker" },
+  { label: "Mailbox Size Report", value: "MailboxSize" },
+  { label: "Mailbox Permissions Report", value: "MailboxFolderPermissions" },
+  { label: "SharePoint & OneDrive Usage Report", value: "SharePointUsage" },
+  { label: "External Sharing Report", value: "SharingTracker" },
+  { label: "Site Permissions Report", value: "SitePermissions" },
+  { label: "Copilot Readiness Report", value: "Copilot" },
+].map((r) => ({ ...r, endpoint: ENDPOINT, command: COMMAND }));
 
 const tenantValue = (t) => (t && typeof t === "object" ? t.value : t);
 
@@ -83,7 +96,7 @@ const Page = () => {
     setLastReport(null);
     generateCall.mutate({
       url: selected.endpoint,
-      data: { TenantFilter: tenantFilter },
+      data: { TenantFilter: tenantFilter, ReportType: selected.value },
     });
   };
 
@@ -96,12 +109,12 @@ const Page = () => {
         TenantFilter: tenantFilter,
         Name: values.scheduleName || `${selected.label} - ${tenantFilter}`,
         command: { label: selected.command, value: selected.command },
-        parameters: { TenantFilter: tenantFilter },
+        parameters: { TenantFilter: tenantFilter, ReportType: selected.value },
         ScheduledTime: Math.floor(Date.now() / 1000),
         Recurrence: values.recurrence || { value: "30d", label: "Every 30 days" },
         postExecution: values.postExecution || [],
         taskType: { value: "scheduled", label: "Scheduled" },
-        reference: `security-report-${tenantFilter}`,
+        reference: `report-${selected.value}-${tenantFilter}`,
       },
     });
   };
