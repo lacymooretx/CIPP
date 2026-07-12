@@ -1096,6 +1096,13 @@ export const nativeMenuItems = [
         scope: 'global',
       },
       {
+        title: 'Reports',
+        path: '/tools/security-report',
+        roles: ['admin', 'superadmin'],
+        permissions: ['CIPP.Core.*'],
+        scope: 'global',
+      },
+      {
         title: 'Custom Tests',
         path: '/tools/custom-tests',
         roles: ['admin', 'superadmin'],
