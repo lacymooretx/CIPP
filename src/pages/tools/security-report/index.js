@@ -9,16 +9,30 @@ import {
   DialogContent,
   DialogActions,
   Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Chip,
 } from "@mui/material";
 import { Grid } from "@mui/system";
-import { Description, Download, Visibility, Schedule } from "@mui/icons-material";
+import {
+  Description,
+  Download,
+  Visibility,
+  Schedule,
+  PictureAsPdf,
+} from "@mui/icons-material";
 import { useForm, useWatch } from "react-hook-form";
 import { Layout as DashboardLayout } from "../../../layouts/index.js";
 import CippButtonCard from "../../../components/CippCards/CippButtonCard";
 import CippFormComponent from "../../../components/CippComponents/CippFormComponent";
 import { CippFormTenantSelector } from "../../../components/CippComponents/CippFormTenantSelector";
 import { CippApiResults } from "../../../components/CippComponents/CippApiResults";
-import { ApiPostCall } from "../../../api/ApiCall";
+import { ApiPostCall, ApiGetCall } from "../../../api/ApiCall";
+
+const GRADE_COLOR = { A: "success", B: "success", C: "warning", D: "warning", F: "error" };
 
 // Report catalogue. Every type runs through the generic dispatcher: on-demand
 // /api/ExecReport?ReportType=…, scheduled via command Push-ExecReport { ReportType }.
@@ -57,7 +71,11 @@ const Page = () => {
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const scheduleForm = useForm({
     mode: "onChange",
-    defaultValues: { recurrence: { label: "Every 30 days", value: "30d" }, postExecution: [] },
+    defaultValues: {
+      recurrence: { label: "Every 30 days", value: "30d" },
+      postExecution: [],
+      allTenants: false,
+    },
   });
 
   const selected = reportType?.value
@@ -82,6 +100,24 @@ const Page = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+  // Print to PDF via the browser (report has a print stylesheet).
+  const printPdf = (html) => {
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 600);
+  };
+
+  // Report history (trend) for the selected tenant + type.
+  const history = ApiGetCall({
+    url: "/api/ListReportHistory",
+    data: { TenantFilter: tenantFilter, ReportType: selected?.value },
+    queryKey: `reporthistory-${tenantFilter}-${selected?.value}`,
+    waiting: !!tenantFilter,
+  });
 
   const generateCall = ApiPostCall({
     onResult: (res) => {
@@ -103,18 +139,19 @@ const Page = () => {
   const scheduleCall = ApiPostCall({ relatedQueryKeys: ["ScheduledTasks"] });
   const handleSchedule = () => {
     const values = scheduleForm.getValues();
+    const target = values.allTenants ? "AllTenants" : tenantFilter;
     scheduleCall.mutate({
       url: "/api/AddScheduledItem",
       data: {
-        TenantFilter: tenantFilter,
-        Name: values.scheduleName || `${selected.label} - ${tenantFilter}`,
+        TenantFilter: target,
+        Name: values.scheduleName || `${selected.label} - ${target}`,
         command: { label: selected.command, value: selected.command },
-        parameters: { TenantFilter: tenantFilter, ReportType: selected.value },
+        parameters: { TenantFilter: target, ReportType: selected.value },
         ScheduledTime: Math.floor(Date.now() / 1000),
         Recurrence: values.recurrence || { value: "30d", label: "Every 30 days" },
         postExecution: values.postExecution || [],
         taskType: { value: "scheduled", label: "Scheduled" },
-        reference: `report-${selected.value}-${tenantFilter}`,
+        reference: `report-${selected.value}-${target}`,
       },
     });
   };
@@ -150,6 +187,15 @@ const Page = () => {
                     onClick={() => downloadHtml(lastReport.name, lastReport.html)}
                   >
                     Download
+                  </Button>
+                )}
+                {lastReport && (
+                  <Button
+                    variant="outlined"
+                    startIcon={<PictureAsPdf />}
+                    onClick={() => printPdf(lastReport.html)}
+                  >
+                    PDF
                   </Button>
                 )}
                 <Button
@@ -189,6 +235,43 @@ const Page = () => {
             </Stack>
           </CippButtonCard>
         </Grid>
+
+        {tenantFilter && history.isSuccess && Array.isArray(history.data) && history.data.length > 0 && (
+          <Grid size={{ xs: 12 }}>
+            <CippButtonCard title={`History — ${selected.label}`}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Grade</TableCell>
+                    <TableCell align="right">Score</TableCell>
+                    <TableCell align="right">Action</TableCell>
+                    <TableCell align="right">Review</TableCell>
+                    <TableCell align="right">Passing</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {history.data.slice(0, 12).map((h, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{h.Date ? new Date(h.Date).toLocaleString() : ""}</TableCell>
+                      <TableCell>
+                        <Chip
+                          size="small"
+                          label={h.Grade}
+                          color={GRADE_COLOR[h.Grade] || "default"}
+                        />
+                      </TableCell>
+                      <TableCell align="right">{h.Score}</TableCell>
+                      <TableCell align="right">{h.Fail}</TableCell>
+                      <TableCell align="right">{h.Warn}</TableCell>
+                      <TableCell align="right">{h.Pass}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CippButtonCard>
+          </Grid>
+        )}
       </Grid>
 
       {/* Schedule dialog */}
@@ -200,6 +283,12 @@ const Page = () => {
               type="textField"
               name="scheduleName"
               label="Task Name"
+              formControl={scheduleForm}
+            />
+            <CippFormComponent
+              type="switch"
+              name="allTenants"
+              label="Run for all tenants (one report per client)"
               formControl={scheduleForm}
             />
             <CippFormComponent
@@ -229,9 +318,10 @@ const Page = () => {
               multiple={true}
             />
             <Alert severity="info">
-              The report for <strong>{tenantFilter || "(no tenant selected)"}</strong> will be
-              generated on this schedule. Choose <strong>Email</strong> to have it delivered as an
-              HTML attachment to your CIPP notification recipients.
+              Generated on this schedule for <strong>{tenantFilter || "the selected tenant"}</strong>{" "}
+              (or every client if "all tenants" is enabled above). Choose <strong>Email</strong> to
+              deliver it as an HTML attachment to your CIPP notification recipients, or{" "}
+              <strong>PSA</strong> to attach it to a ConnectWise ticket.
             </Alert>
             <CippApiResults apiObject={scheduleCall} />
           </Stack>
