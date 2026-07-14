@@ -75,6 +75,7 @@ const Page = () => {
       recurrence: { label: "Every 30 days", value: "30d" },
       postExecution: [],
       allTenants: false,
+      connectWiseTicket: false,
     },
   });
 
@@ -146,7 +147,11 @@ const Page = () => {
         TenantFilter: target,
         Name: values.scheduleName || `${selected.label} - ${target}`,
         command: { label: selected.command, value: selected.command },
-        parameters: { TenantFilter: target, ReportType: selected.value },
+        parameters: {
+          TenantFilter: target,
+          ReportType: selected.value,
+          ConnectWiseTicket: !!values.connectWiseTicket,
+        },
         ScheduledTime: Math.floor(Date.now() / 1000),
         Recurrence: values.recurrence || { value: "30d", label: "Every 30 days" },
         postExecution: values.postExecution || [],
@@ -292,6 +297,12 @@ const Page = () => {
               formControl={scheduleForm}
             />
             <CippFormComponent
+              type="switch"
+              name="connectWiseTicket"
+              label="Create a ConnectWise ticket (posture summary)"
+              formControl={scheduleForm}
+            />
+            <CippFormComponent
               type="autoComplete"
               name="recurrence"
               label="Recurrence"
@@ -319,9 +330,10 @@ const Page = () => {
             />
             <Alert severity="info">
               Generated on this schedule for <strong>{tenantFilter || "the selected tenant"}</strong>{" "}
-              (or every client if "all tenants" is enabled above). Choose <strong>Email</strong> to
-              deliver it as an HTML attachment to your CIPP notification recipients, or{" "}
-              <strong>PSA</strong> to attach it to a ConnectWise ticket.
+              (or every client if "all tenants" is enabled above). <strong>Email</strong> delivers
+              the full HTML report as an attachment to your CIPP notification recipients. The{" "}
+              <strong>ConnectWise ticket</strong> toggle opens a ticket with the posture summary
+              (grade + action items). ("PSA" post-execution targets HaloPSA.)
             </Alert>
             <CippApiResults apiObject={scheduleCall} />
           </Stack>
