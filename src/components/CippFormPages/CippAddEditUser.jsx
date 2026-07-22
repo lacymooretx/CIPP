@@ -908,7 +908,8 @@ const CippAddEditUser = (props) => {
               label: userGroups.DisplayName,
               value: userGroups.id,
               addedFields: {
-                groupType: userGroups.calculatedGroupType || userGroups.groupType,
+                groupType: userGroups.groupType,
+                calculatedGroupType: userGroups.calculatedGroupType,
               },
             }))}
             creatable={false}

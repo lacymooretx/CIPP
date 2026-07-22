@@ -708,6 +708,11 @@ export const nativeMenuItems = [
         permissions: ['Sharepoint.Admin.*'],
       },
       {
+        title: 'SharePoint Templates',
+        path: '/teams-share/sharepoint-templates',
+        permissions: ['Sharepoint.Admin.*'],
+      },
+      {
         title: 'Deleted Sites',
         path: '/teams-share/deleted-sites',
         permissions: ['Sharepoint.Admin.*'],
